@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import Student, School
 
-# Register your models here.
+# Registering models for API
+admin.site.register(Student)
+admin.site.register(School)
