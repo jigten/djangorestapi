@@ -47,5 +47,37 @@ class StudentViewSet(viewsets.ModelViewSet):
             return Student.objects.filter(school=self.kwargs['school_pk'])
         else:
             return super().get_queryset()
-        # return Student.objects.filter(school=self.kwargs['school_pk'])
+    
+
+    # override create method for maximum students check
+    def create(self, request, school_pk=None):
+        serializer_class = StudentSerializer
+        serializer = serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            # check is school_pk is supplied
+            if school_pk:
+                # retrieve the school
+                school = get_object_or_404(School, pk=school_pk)
+                # check if school has maximum number of students enrolled
+                if(school.student.count() == school.max_students):
+                    # return DRF error message if max students reached
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    # enroll the student otherwise
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                print(serializer.validated_data.get("school").id)
+                school = get_object_or_404(School, pk=serializer.validated_data.get("school").id)
+                # check if school has maximum number of students enrolled
+                if(school.student.count() == school.max_students):
+                    # return DRF error message if max students reached
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    # enroll the student otherwise
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
