@@ -43,5 +43,9 @@ class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
 
     def get_queryset(self):
-        return Student.objects.filter(school=self.kwargs['school_pk'])
+        if self.kwargs.get('school_pk'):
+            return Student.objects.filter(school=self.kwargs['school_pk'])
+        else:
+            return super().get_queryset()
+        # return Student.objects.filter(school=self.kwargs['school_pk'])
 
