@@ -1,83 +1,20 @@
-from django.http import HttpResponse
-from .serializers import SchoolSerializer, StudentSerializer
+from .serializers import SchoolSerializer, StudentSerializer, SchoolStudentSerializer
 from .models import School, Student
 from rest_framework import viewsets
-from rest_framework.response import Response
-from rest_framework import status
-from django.shortcuts import get_object_or_404
 
 # Viewsets
 class SchoolViewSet(viewsets.ModelViewSet):
     serializer_class = SchoolSerializer
     queryset = School.objects.all()
 
-    # def list(self, request):
-    #     queryset = School.objects.all()
-    #     serializer = SchoolSerializer(queryset, many=True)
-    #     return Response(serializer.data)
-
-    # def create(self, request):
-    #     serializer = SchoolSerializer(data=request.data)
-
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # def retrieve(self, request, pk=None):
-    #     queryset = School.objects.all()
-    #     school = get_object_or_404(queryset, pk=pk)
-    #     serializer = SchoolSerializer(school)
-    #     return Response(serializer.data)
-
-    # def update(self, request, pk=None):
-    #     school = School.objects.get(pk=pk)
-    #     serializer = SchoolSerializer(school, data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 class StudentViewSet(viewsets.ModelViewSet):
     serializer_class = StudentSerializer
-    queryset = Student.objects.all()
 
     def get_queryset(self):
-        if self.kwargs.get('school_pk'):
-            return Student.objects.filter(school=self.kwargs['school_pk'])
-        else:
-            return super().get_queryset()
+        return Student.objects.all()
     
+class SchoolStudentViewSet(viewsets.ModelViewSet):
+    serializer_class = SchoolStudentSerializer
 
-    # override create method for maximum students check
-    def create(self, request, school_pk=None):
-        serializer_class = StudentSerializer
-        serializer = serializer_class(data=request.data)
-
-        if serializer.is_valid():
-            # check is school_pk is supplied
-            if school_pk:
-                # retrieve the school
-                school = get_object_or_404(School, pk=school_pk)
-                # check if school has maximum number of students enrolled
-                if(school.student.count() == school.max_students):
-                    # return DRF error message if max students reached
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                else:
-                    # enroll the student otherwise
-                    serializer.save()
-                    return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                print(serializer.validated_data.get("school").id)
-                school = get_object_or_404(School, pk=serializer.validated_data.get("school").id)
-                # check if school has maximum number of students enrolled
-                if(school.student.count() == school.max_students):
-                    # return DRF error message if max students reached
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                else:
-                    # enroll the student otherwise
-                    serializer.save()
-                    return Response(serializer.data, status=status.HTTP_201_CREATED)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    def get_queryset(self):
+        return Student.objects.filter(school=self.kwargs['school_pk'])

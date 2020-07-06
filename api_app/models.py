@@ -5,7 +5,7 @@ import uuid
 # School model
 class School(models.Model):
     name = models.CharField(max_length=20)
-    max_students = models.PositiveSmallIntegerField() # Don't expect maximum number of students accomodated to exceed the limit of PositiveSmallIntegerField
+    max_students = models.PositiveSmallIntegerField() # Don't expect maximum number of students to exceed the limit of PositiveSmallIntegerField
 
     def __str__(self):
         return self.name
