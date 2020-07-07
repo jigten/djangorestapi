@@ -24,7 +24,8 @@ class Student(models.Model):
     def __str__(self):
         return self.first_name + self.last_name
 
+# Handle checking of max students before saving student
 @receiver(pre_save, sender=Student)
 def student_pre_save(sender, instance, **kwargs):
     if instance.school.student.count() == instance.school.max_students:
-        raise ValidationError('Reached maximum capacity of students for this school')
+        raise ValidationError('Reached maximum capacity of students for {}'.format(instance.school))
