@@ -1,5 +1,8 @@
 from django.db import models
 import uuid
+from rest_framework.exceptions import ValidationError
+from django.dispatch import receiver
+from django.db.models.signals import pre_save
 
 # Models
 # School model
@@ -20,3 +23,8 @@ class Student(models.Model):
 
     def __str__(self):
         return self.first_name + self.last_name
+
+@receiver(pre_save, sender=Student)
+def student_pre_save(sender, instance, **kwargs):
+    if instance.school.student.count() == instance.school.max_students:
+        raise ValidationError('Reached maximum capacity of students for this school')
