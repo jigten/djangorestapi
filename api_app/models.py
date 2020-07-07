@@ -19,6 +19,7 @@ class Student(models.Model):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
     student_id = models.CharField(max_length=20)
+    birth_date = models.DateField()
     school = models.ForeignKey(School, related_name='student', on_delete=models.CASCADE, default=None) # many-to-one relationship with School
 
     def __str__(self):
