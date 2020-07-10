@@ -19,6 +19,15 @@ This is a REST API created using the Django REST framework to fulfill the requir
 - `/students/`
 - `/students/:pk`
 
+## Instructions
+```
+Clone repository
+Run pipenv install
+Run python filler.py
+Run python manage.py runserver
+Navigate to http://localhost:8000/schools/
+```
+
 ## Technologies/ Packages used
 - Django / Django REST Framework
 - DRF Nested Routers

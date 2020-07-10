@@ -12,6 +12,3 @@ django-environ = "*"
 djangorestframework = "*"
 drf-nested-routers = "*"
 faker = "*"
-
-[requires]
-python_version = "3.8"
